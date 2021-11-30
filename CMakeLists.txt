@@ -7,11 +7,11 @@ project(ImageProcessing)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs cv_bridge image_transport)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/vendor/opencv")
-find_package(OpenCV REQUIRED COMPONENTS core imgproc video videoio)
-
+find_package(OpenCV REQUIRED COMPONENTS highgui core imgproc video videoio)
+find_library(GX_CAMERA_LIBRARY gxiapi PATHS {PROJECT_SOURCE_DIR}/vendor/lib)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -103,30 +103,33 @@ find_package(OpenCV REQUIRED COMPONENTS core imgproc video videoio)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+ INCLUDE_DIRS  ${PROJECT_SOURCE_DIR}/vendor/include 
 #  LIBRARIES ImageProcessing
-#  CATKIN_DEPENDS other_catkin_pkg
+ CATKIN_DEPENDS roscpp
+
 #  DEPENDS system_lib
 )
 
 ###########
 ## Build ##
 ###########
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-target_include_directories( ${PROJECT_NAME}
-
+include_directories( 
  include ${catkin_INCLUDE_DIRS}
  ${PROJECT_SOURCE_DIR}/vendor/include
  ${OpenCV_INCLUDE_DIRS}
 )
 
 
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.hxx")
+message(${SOURCES})
+add_executable(vision_node ${SOURCES} )
 
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} )
+target_link_libraries(vision_node ${OpenCV_LIBS} ${GX_CAMERA_LIBRARY} ${catkin_LIBRARIES})
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/ImageProcessing.cpp
