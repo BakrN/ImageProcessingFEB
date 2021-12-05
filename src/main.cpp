@@ -2,7 +2,7 @@
 
 #include <ros/ros.h> 
 #include "GXDevice.h"
-#include "DualCamera.h"
+#include "StereoCamera.h"
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -15,7 +15,7 @@
 int main(int argc, char** argv){
     ros::init(argc, argv,"vision_node"); 
     ros::NodeHandle nh; 
-    DualCamera Camera; 
+    StereoCamera Camera; 
     GXDevice VisionDevice; 
     VisionDevice.Init(); 
       
@@ -44,8 +44,8 @@ int main(int argc, char** argv){
         // ROS_INFO("DATA ASSIGNED"); 
         
         Camera.SetImage(Data, cv::COLOR_BayerRG2GRAY); 
-        cv::Mat& LeftImg =  Camera.GetLeft(); 
-        cv::Mat& RightImg =  Camera.GetRight(); 
+        cv::Mat& LeftImg =  Camera.GetLeftImage(); 
+        cv::Mat& RightImg =  Camera.GetRightImage(); 
         cv::resize(LeftImg,LeftImg, cv::Size(LeftImg.rows/2, LeftImg.cols/2)); 
         cv::resize(RightImg,RightImg, cv::Size(RightImg.rows/2, RightImg.cols/2)); 
         imshow("LeftFeed", LeftImg); 

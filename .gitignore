@@ -1,4 +1,5 @@
 .vscode/*
+src/calibration/Images/*
 vendor/lib/*
 vendor/cam_driver/* 
 # Prerequisites
