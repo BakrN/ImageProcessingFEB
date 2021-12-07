@@ -1,5 +1,5 @@
 #pragma once 
-#include "StereoCamera.h"
+#include "../StereoCamera.h"
 #include <opencv2/core.hpp>
 #include <iostream> 
 #include <vector>

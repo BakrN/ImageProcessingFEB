@@ -60,11 +60,14 @@ bool GXDevice::OpenDevice(){
        OpenDevice(); // Open Device  
         GX_CALL(&m_Status,GXSetEnum(m_DevHandle, GX_ENUM_EXPOSURE_MODE, GX_EXPOSURE_MODE_TIMED),__LINE__);
     //GX_CALL(&m_Status,GXSetEnum(m_DevHandle, GX_ENUM_EXPOSURE_AUTO, GX_EXPOSURE_AUTO_CONTINUOUS),__LINE__);
-    GX_CALL(&m_Status,GXSetFloat(m_DevHandle, GX_FLOAT_GAIN, 16),__LINE__);
-    GX_CALL(&m_Status,GXSetEnum(m_DevHandle, GX_ENUM_BALANCE_RATIO_SELECTOR, GX_BALANCE_RATIO_SELECTOR_RED),__LINE__);
-    GX_CALL(&m_Status,GXSetFloat(m_DevHandle, GX_FLOAT_BALANCE_RATIO, 1.4),__LINE__);
-    GX_CALL(&m_Status,GXSetEnum(m_DevHandle, GX_ENUM_BALANCE_RATIO_SELECTOR, GX_BALANCE_RATIO_SELECTOR_BLUE),__LINE__);
-    GX_CALL(&m_Status,GXSetFloat(m_DevHandle, GX_FLOAT_BALANCE_RATIO, 1.5),__LINE__);
+    GX_CALL(&m_Status,GXSetEnum(m_DevHandle, GX_ENUM_PIXEL_FORMAT, GX_PIXEL_FORMAT_BAYER_RG8),__LINE__); // bayer rg 8 
+    GX_CALL(&m_Status,GXSetFloat(m_DevHandle, GX_FLOAT_GAIN, 1),__LINE__);// FLOAT Gain 0 
+    GX_CALL(&m_Status,GXSetEnum(m_DevHandle, GX_ENUM_BALANCE_RATIO_SELECTOR, GX_BALANCE_RATIO_SELECTOR_RED),__LINE__); // red Ratio 
+    GX_CALL(&m_Status,GXSetFloat(m_DevHandle, GX_FLOAT_BALANCE_RATIO, 1),__LINE__);
+    GX_CALL(&m_Status,GXSetEnum(m_DevHandle, GX_ENUM_BALANCE_RATIO_SELECTOR, GX_BALANCE_RATIO_SELECTOR_BLUE),__LINE__); // blue ratio 
+    GX_CALL(&m_Status,GXSetFloat(m_DevHandle, GX_FLOAT_BALANCE_RATIO, 1),__LINE__);
+    GX_CALL(&m_Status,GXSetEnum(m_DevHandle, GX_ENUM_BALANCE_RATIO_SELECTOR, GX_BALANCE_RATIO_SELECTOR_BLUE),__LINE__); // blue ratio 
+    GX_CALL(&m_Status,GXSetFloat(m_DevHandle, GX_FLOAT_BALANCE_RATIO, 1),__LINE__);
        return m_Status; 
     }
      bool GXDevice::Shutdown(){

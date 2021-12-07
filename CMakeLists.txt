@@ -7,10 +7,11 @@ project(ImageProcessing)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs cv_bridge image_transport)
+set(CMAKE_CXX_STANDARD 17)
+find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs )
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/vendor/opencv")
-find_package(OpenCV REQUIRED COMPONENTS highgui core imgproc video videoio)
+find_package(OpenCV REQUIRED COMPONENTS highgui core imgproc video calib3d features2d)
 find_library(GX_CAMERA_LIBRARY gxiapi PATHS {PROJECT_SOURCE_DIR}/vendor/lib)
 
 ## System dependencies are found with CMake's conventions
@@ -127,7 +128,7 @@ include_directories(
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.hxx")
 message(${SOURCES})
-add_executable(vision_node ${SOURCES} )
+add_executable(vision_node ${SOURCES}  )
 
 target_link_libraries(vision_node ${OpenCV_LIBS} ${GX_CAMERA_LIBRARY} ${catkin_LIBRARIES})
 ## Declare a C++ library

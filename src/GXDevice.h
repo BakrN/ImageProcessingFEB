@@ -3,8 +3,9 @@
 #include <camera/DxImageProc.h>
 #include <camera/GxIAPI.h>
 
+/* NOTE: RGGB is the color scheme */ 
 
- 
+
 class GXDevice{
     private: 
       GX_STATUS m_Status; 

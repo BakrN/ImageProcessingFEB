@@ -1,26 +1,27 @@
 #include "Stitcher.h"
-#include <opencv2/core/core.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <ros/ros.h>
+
 Stitcher::Stitcher(){
   m_SIFTDetector = cv::SIFT::create(); 
-
 }
 Stitcher::Stitcher(const std::shared_ptr<StereoCamera>& Camera){
     m_Camera = Camera; 
-  m_WarpedImage.create(cv::Size(m_Camera->GetRawImage().cols, m_Camera->GetRawImage().rows), CV_8UC1); 
+  
   m_SIFTDetector = cv::SIFT::create(); 
 }
 void Stitcher::FindFeaturePoints(){
   // find key points ; 
-   m_SIFTDetector->detectAndCompute(m_Camera->GetLeftImage(),NULL , m_KeyPoints[0],m_Descriptors[0]); 
-   m_SIFTDetector->detectAndCompute(m_Camera->GetRightImage(),NULL , m_KeyPoints[1],m_Descriptors[1]); 
+
+   m_SIFTDetector->detectAndCompute(m_Camera->GetLeftImage(),cv::noArray() , m_KeyPoints[0],m_Descriptors[0]); 
+   m_SIFTDetector->detectAndCompute(m_Camera->GetRightImage(),cv::noArray() , m_KeyPoints[1],m_Descriptors[1]); 
 }
 void Stitcher::MatchFeaturePoints(){
   // find matched key points indices 
    cv::FlannBasedMatcher matcher; //https://docs.opencv.org/3.4/d5/d6f/tutorial_feature_flann_matcher.html
   std::vector<std::vector<cv::DMatch>> matched; 
-  matcher.knnMatch(m_KeyPoints[0], m_KeyPoints[1], matched, 2); /// keep top 2 matches only
+  matcher.knnMatch(m_Descriptors[0], m_Descriptors[1], matched, 2); /// keep top 2 matches only
 
   std::vector<cv::DMatch> good_matches; 
       const float ratio_thresh = 0.7f;
@@ -34,11 +35,11 @@ void Stitcher::MatchFeaturePoints(){
     }
 
   
-  std::vector<cv::KeyPoint> left_keypoint; 
-  std::vector<cv::KeyPoint> right_keypoint; 
+  std::vector<cv::Point2f> left_keypoint; 
+  std::vector<cv::Point2f> right_keypoint; 
   for(int i = 0; i < good_matches.size(); i++){
-    left_keypoint.emplace_back(m_KeyPoints[0][good_matches[i].queryIdx]); 
-    right_keypoint.emplace_back(m_KeyPoints[0][good_matches[i].trainIdx]); 
+    left_keypoint.push_back(m_KeyPoints[0][good_matches[i].queryIdx].pt); 
+    right_keypoint.push_back(m_KeyPoints[1][good_matches[i].trainIdx].pt); 
   }
   // calculate homography using RANSAC with an error thresholf of 5.0 
   m_Homography = cv::findHomography(left_keypoint, right_keypoint,cv::RANSAC, 5.0); 
@@ -46,21 +47,37 @@ void Stitcher::MatchFeaturePoints(){
 void Stitcher::Stitch(const std::shared_ptr<StereoCamera>& Camera){
   m_Camera = Camera; 
   m_WarpedImage.create(cv::Size(m_Camera->GetRawImage().cols, m_Camera->GetRawImage().rows), CV_8UC1); 
+  m_Homography.release(); // Assumes new camera; // reset 
   this->Stitch(); 
 }
 void Stitcher::Stitch(){
 
   if(m_Homography.empty()){
+   
+    ROS_INFO("BEFORE MEAURING FEATURE POINTS"); 
     FindFeaturePoints(); 
+    ROS_INFO("after MEAURING FEATURE POINTS"); 
     MatchFeaturePoints(); 
+
+    ROS_INFO("After matching FEATURE POINTS"); 
+
   }
   // stitch images - will need optimization 
   cv::Mat& Image = m_Camera->GetRawImage(); 
-  cv::warpPerspective(m_Camera->GetLeftImage(),m_WarpedImage,m_Homography ,m_WarpedImage.size()); 
-  Image(cv::Range(0, Image.rows-1), cv::Range(0, Image.cols/2 - 1)) = m_WarpedImage(cv::Range(0, Image.rows-1), cv::Range(0, Image.cols/2 -1)); 
+  m_WarpedImage.create(Image.rows, Image.cols/2, CV_8UC1); 
+    
+  m_Camera->GetStitchedImage().create(Image.rows,Image.cols,CV_8UC1); 
+
+  cv::warpPerspective(m_Camera->GetRightImage(),m_WarpedImage,m_Homography ,m_WarpedImage.size()); 
+  m_WarpedImage.copyTo(m_Camera->GetStitchedImage()(cv::Range(0,Image.rows-1), cv::Range(Image.cols/2, Image.cols-1)) );
+  m_Camera->GetLeftImage().copyTo( m_Camera->GetStitchedImage()(cv::Range(0,Image.rows-1), cv::Range(0,Image.cols/2 -1)));  
+  //Image(cv::Range(0, Image.rows-1), cv::Range(0, Image.cols/2 - 1)) = m_WarpedImage; 
+
+ // cv::hconcat(m_WarpedImage,m_Camera->GetRightImage(),m_Camera->GetStitchedImage()); 
+  
   // crop image and remove black borders 
- 
-  for (int j = (int)(Image.cols/2 -1); j>=0; j++){
+   
+  /*for (int j = (int)(Image.cols/2 -1); j>=0; j++){
      bool crop_here= true; 
     if(Image.at<uchar>(0, j) == 0){
       // found black pixel 
@@ -74,10 +91,11 @@ void Stitcher::Stitch(){
       }
     }
     if(crop_here){
+      
       m_Camera->GetStitchedImage() = Image(cv::Range(0,Image.rows-1), cv::Range(j, Image.cols-1)); 
       break; 
     }
-  }
+  }*/
   
 }
 
