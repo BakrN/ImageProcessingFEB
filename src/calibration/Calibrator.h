@@ -11,9 +11,11 @@ class Calibrator {
         std::vector<cv::Point3f > m_CheckerBoardPoints;
         std::vector<std::vector<cv::Point2f> > m_Imgpoints;
         int CHECKERBOARD[2] = {6,9}; //checkerboard size;  
+        int m_CheckerBoardUnit ; 
    
     public: 
     Calibrator(); 
+    Calibrator(int unit_size); 
     Calibrator(const std::shared_ptr<StereoCamera>& Camera); 
     ~Calibrator(); 
 

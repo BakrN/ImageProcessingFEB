@@ -18,6 +18,7 @@ ConeClassifier::~ConeClassifier(){
 }
 
 void ConeClassifier::Detect(){
+    
 }
 
 void ConeClassifier::Detect(const std::shared_ptr<StereoCamera>& Camera){
