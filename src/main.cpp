@@ -13,7 +13,7 @@
 #include "../tests/StitchTest.cpp"
 #include <chrono>
 
-
+using namespace vn ; 
 
 int main(int argc, char** argv){
     ros::init(argc, argv,"vision_node"); 

@@ -75,35 +75,8 @@ void Stitcher::Stitch(){
   cv::warpPerspective(m_Camera->GetRightImage(),m_WarpedImage,m_Homography ,m_WarpedImage.size()); 
   m_WarpedImage.copyTo(m_Camera->GetStitchedImage()(cv::Range(0,Image.rows-1), cv::Range(Image.cols/2, Image.cols-1)) );
   m_Camera->GetLeftImage().copyTo( m_Camera->GetStitchedImage()(cv::Range(0,Image.rows-1), cv::Range(0,Image.cols/2 -1)));  
-  //Image(cv::Range(0, Image.rows-1), cv::Range(0, Image.cols/2 - 1)) = m_WarpedImage; 
-
- // cv::hconcat(m_WarpedImage,m_Camera->GetRightImage(),m_Camera->GetStitchedImage()); 
-  
-  // crop image and remove black borders 
-   
-  /*for (int j = (int)(Image.cols/2 -1); j>=0; j++){
-     bool crop_here= true; 
-    if(Image.at<uchar>(0, j) == 0){
-      // found black pixel 
-      // go through the rows 
-      for(int i = 1; i < Image.rows ; i++){
-          if(Image.at<uchar>(0, j) != 0){
-            crop_here = false; 
-            break; 
-          }
-          
-      }
-    }
-    if(crop_here){
-      
-      m_Camera->GetStitchedImage() = Image(cv::Range(0,Image.rows-1), cv::Range(j, Image.cols-1)); 
-      break; 
-    }
-  }*/
-  
 }
-
-cv::Mat Stitcher::Stitch(const cv::Mat& Left, const cv::Mat& Right){
+ cv::Mat Stitcher::Stitch(const cv::Mat& Left, const cv::Mat& Right){
   //if (m_Homography.empty()){
    
     FindFeaturePoints(Left, Right);   

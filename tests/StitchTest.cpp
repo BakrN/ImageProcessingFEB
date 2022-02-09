@@ -3,7 +3,7 @@
 #include <opencv2/highgui.hpp>
 #include <filesystem> 
 
-
+using namespace vn ; 
 void RunStitchTest(){
     std::string Dir = std::filesystem::current_path().string(); 
     

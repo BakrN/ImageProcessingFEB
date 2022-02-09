@@ -1,27 +1,27 @@
 #include "StereoCamera.h"
-StereoCamera::StereoCamera(){
+vn::StereoCamera::StereoCamera(){
     m_VisionDevice = new GXDevice(); 
     m_VisionDevice->Init(); 
 }
-StereoCamera::StereoCamera(GXDevice* VisionDevice){
+vn::StereoCamera::StereoCamera(GXDevice* VisionDevice){
   
     m_VisionDevice = VisionDevice; 
       m_VisionDevice->StartStream(); 
 }
-StereoCamera::~StereoCamera(){
+vn::StereoCamera::~StereoCamera(){
     m_VisionDevice->StopStream(); 
     m_VisionDevice->Shutdown(); 
     delete m_VisionDevice ; 
 }
 
-void StereoCamera::StartCapture() const{
+void vn::StereoCamera::StartCapture() const{
     m_VisionDevice->StartStream(); 
 }
 
-void StereoCamera::StopCapture() const{
+void vn::StereoCamera::StopCapture() const{
     m_VisionDevice->StopStream(); 
 }
-void StereoCamera::AquireImage(){
+void vn::StereoCamera::AquireImage(){
     PGX_FRAME_BUFFER p_FrameData = m_VisionDevice->AquireImage(); 
     
     if(p_FrameData->nStatus == GX_STATUS_SUCCESS){
@@ -38,34 +38,34 @@ void StereoCamera::AquireImage(){
         
     }
 }
- void StereoCamera::SetImage(const cv::Mat& DualImage){
+ void vn::StereoCamera::SetImage(const cv::Mat& DualImage){
      m_RawImage = DualImage; 
  }
-void StereoCamera::SetImage(const cv::Mat& DualImage, int cv_conversion_code) {
+void vn::StereoCamera::SetImage(const cv::Mat& DualImage, int cv_conversion_code) {
     cv::cvtColor(DualImage, m_RawImage, cv_conversion_code); 
 }
  
-cv::Mat StereoCamera::GetLeftImage(){
+cv::Mat vn::StereoCamera::GetLeftImage(){
     return m_RawImage(cv::Range(0, m_RawImage.rows - 1), cv::Range(0, (m_RawImage.cols/2) - 1)); 
   
 }
-cv::Mat StereoCamera::GetRightImage(){
+cv::Mat vn::StereoCamera::GetRightImage(){
     return m_RawImage(cv::Range(0, m_RawImage.rows - 1), cv::Range(m_RawImage.cols/2, m_RawImage.cols- 1)); 
     
 }
 
-cv::Mat& StereoCamera::GetLeftIntrinsicParams(){
+cv::Mat& vn::StereoCamera::GetLeftIntrinsicParams(){
     return m_IntrinsicParams[0];
 }
-cv::Mat& StereoCamera::GetRigthIntrinsicParams(){
+cv::Mat& vn::StereoCamera::GetRigthIntrinsicParams(){
     return m_IntrinsicParams[1];
 }
-cv::Mat& StereoCamera::GetLeftDistortionCoeff(){
+cv::Mat& vn::StereoCamera::GetLeftDistortionCoeff(){
     return m_DistortionCoeff[0]; 
 } 
-cv::Mat& StereoCamera::GetRightDistortionCoeff(){
+cv::Mat& vn::StereoCamera::GetRightDistortionCoeff(){
     return m_DistortionCoeff[1]; 
 }
-cv::Mat& StereoCamera::GetRawImage(){return m_RawImage; } 
-cv::Mat& StereoCamera::GetVideoImage(){return m_VideoImage; }
-cv::Mat& StereoCamera::GetStitchedImage(){return m_StitchedImage; }
+cv::Mat& vn::StereoCamera::GetRawImage(){return m_RawImage; } 
+cv::Mat& vn::StereoCamera::GetVideoImage(){return m_VideoImage; }
+cv::Mat& vn::StereoCamera::GetStitchedImage(){return m_StitchedImage; }

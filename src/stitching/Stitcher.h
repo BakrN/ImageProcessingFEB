@@ -2,6 +2,7 @@
 #include "../StereoCamera.h"
 #include <vector>
 #include <opencv2/features2d.hpp>
+namespace vn{ 
 class Stitcher
 {
 private:
@@ -25,4 +26,4 @@ public:
     void Stitch();
     cv::Mat Stitch(const cv::Mat &Left, const cv::Mat& Right); 
     cv::Mat &GetHomograhy();
-};
+};}; 

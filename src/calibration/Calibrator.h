@@ -3,6 +3,7 @@
 #include <opencv2/core.hpp>
 #include <iostream> 
 #include <vector>
+namespace vn{
 class Calibrator { 
     // THIS CLASS CALIBRATES CAMERAS USING THE CHESSBOARD 
     private: 
@@ -23,4 +24,4 @@ class Calibrator {
     void Calibrate(char new_calibration=true);
     void Calibrate(const std::shared_ptr<StereoCamera>& Camera, char new_calibration=true); 
     
-}; 
+}; }; 

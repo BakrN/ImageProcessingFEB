@@ -2,7 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include "GXDevice.h"
-
+namespace vn{
 class StereoCamera{
     private:
         GXDevice* m_VisionDevice;  // Reference to vision device    
@@ -33,4 +33,4 @@ class StereoCamera{
         cv::Mat& GetStitchedImage(); 
         cv::Mat& GetVideoImage(); 
 
-}; 
+}; }
