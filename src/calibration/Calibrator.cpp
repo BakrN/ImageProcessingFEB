@@ -4,7 +4,7 @@
 #include <iostream>
 #include <filesystem>
 #include <ros/ros.h> 
-Calibrator::Calibrator()
+vn::Calibrator::Calibrator()
 {
      // Defining the world coordinates for Checkerboard image 3D points
 
@@ -14,7 +14,7 @@ Calibrator::Calibrator()
             m_CheckerBoardPoints.push_back(cv::Point3f(j, i, 0));
     }
 }
-Calibrator::Calibrator(const std::shared_ptr<StereoCamera>& Camera){
+vn::Calibrator::Calibrator(const std::shared_ptr<StereoCamera>& Camera){
       //initializing checkerboard 3d points
     for (int i{0}; i < CHECKERBOARD[1]; i++)
     {
@@ -23,10 +23,10 @@ Calibrator::Calibrator(const std::shared_ptr<StereoCamera>& Camera){
     }
     m_Camera = Camera; 
 }
-Calibrator::~Calibrator(){
+vn::Calibrator::~Calibrator(){
 
 }
-void Calibrator::Calibrate(char new_calibration){
+void vn::Calibrator::Calibrate(char new_calibration){
     // start taking images
     if(!m_Camera){
         // log error that cam wasn't initialized then return 
@@ -187,7 +187,7 @@ void Calibrator::Calibrate(char new_calibration){
     ParamsStorage.release(); 
 }
 
-void Calibrator::Calibrate(const std::shared_ptr<StereoCamera>& Camera, char new_calibration)
+void vn::Calibrator::Calibrate(const std::shared_ptr<StereoCamera>& Camera, char new_calibration)
 {
     m_Camera = Camera; 
     this->Calibrate(new_calibration); 

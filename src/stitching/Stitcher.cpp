@@ -3,26 +3,26 @@
 #include <opencv2/highgui.hpp>
 #include <ros/ros.h>
 
-Stitcher::Stitcher(){
+vn::Stitcher::Stitcher(){
   m_SIFTDetector = cv::SIFT::create(); 
 }
-Stitcher::Stitcher(const std::shared_ptr<StereoCamera>& Camera){
+vn::Stitcher::Stitcher(const std::shared_ptr<StereoCamera>& Camera){
     m_Camera = Camera; 
   
   m_SIFTDetector = cv::SIFT::create(); 
 }
-void Stitcher::FindFeaturePoints(){
+void vn::Stitcher::FindFeaturePoints(){
   // find key points ; 
 
    m_SIFTDetector->detectAndCompute(m_Camera->GetLeftImage(),cv::noArray() , m_KeyPoints[0],m_Descriptors[0]); 
    m_SIFTDetector->detectAndCompute(m_Camera->GetRightImage(),cv::noArray() , m_KeyPoints[1],m_Descriptors[1]); 
 }
 
-void Stitcher::FindFeaturePoints(const cv::Mat& Left, const cv::Mat& Right){
+void vn::Stitcher::FindFeaturePoints(const cv::Mat& Left, const cv::Mat& Right){
     m_SIFTDetector->detectAndCompute(Left,cv::noArray() , m_KeyPoints[0],m_Descriptors[0]); 
    m_SIFTDetector->detectAndCompute(Right,cv::noArray() , m_KeyPoints[1],m_Descriptors[1]); 
 }
-void Stitcher::MatchFeaturePoints(){
+void vn::Stitcher::MatchFeaturePoints(){
   // find matched key points indices 
    cv::FlannBasedMatcher matcher; //https://docs.opencv.org/3.4/d5/d6f/tutorial_feature_flann_matcher.html
   std::vector<std::vector<cv::DMatch>> matched; 
@@ -48,13 +48,13 @@ void Stitcher::MatchFeaturePoints(){
   // calculate homography using RANSAC with an error thresholf of 5.0 
   m_Homography = cv::findHomography(right_keypoint, left_keypoint,cv::RANSAC, 3.0); // right to left
 }
-void Stitcher::Stitch(const std::shared_ptr<StereoCamera>& Camera){
+void vn::Stitcher::Stitch(const std::shared_ptr<StereoCamera>& Camera){
   m_Camera = Camera; 
   m_WarpedImage.create(cv::Size(m_Camera->GetRawImage().cols, m_Camera->GetRawImage().rows), CV_8UC1); 
   m_Homography.release(); // Assumes new camera; // reset 
   this->Stitch(); 
 }
-void Stitcher::Stitch(){
+void vn::Stitcher::Stitch(){
 
   if(m_Homography.empty()){
    
@@ -76,14 +76,14 @@ void Stitcher::Stitch(){
   m_WarpedImage.copyTo(m_Camera->GetStitchedImage()(cv::Range(0,Image.rows-1), cv::Range(Image.cols/2, Image.cols-1)) );
   m_Camera->GetLeftImage().copyTo( m_Camera->GetStitchedImage()(cv::Range(0,Image.rows-1), cv::Range(0,Image.cols/2 -1)));  
 }
- cv::Mat Stitcher::Stitch(const cv::Mat& Left, const cv::Mat& Right){
-  //if (m_Homography.empty()){
+
+ cv::Mat vn::Stitcher::Stitch(const cv::Mat& Left, const cv::Mat& Right){
+  if (m_Homography.empty()){
    
     FindFeaturePoints(Left, Right);   
     ROS_INFO("FOUND FEATURES  FEATURES"); 
     MatchFeaturePoints(); 
-     ROS_INFO("FOUND MATCHED FEATURES"); 
-  //}
+     ROS_INFO("FOUND MATCHED FEATURES"); }
   cv::Mat stitched_image; 
   cv::warpPerspective(Right, m_WarpedImage, m_Homography ,cv::Size(Right.cols+Left.cols, Right.rows)); 
   Left.copyTo(m_WarpedImage(cv::Rect(0,0,Left.cols, Left.rows))); 

@@ -33,4 +33,4 @@ class StereoCamera{
         cv::Mat& GetStitchedImage(); 
         cv::Mat& GetVideoImage(); 
 
-}; }
+}; }; 

@@ -1,8 +1,6 @@
 #pragma once 
 #include "StereoCamera.h"
 
-
-#define PYTORCH_MODEL  
 #define CONFIDENCE_THRESHOLD 0.9
 namespace vn {
 struct NetConfiguration{

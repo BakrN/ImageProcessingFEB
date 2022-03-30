@@ -1,15 +1,7 @@
 #include "ConeClassifier.h"
 
 vn::ConeClassifier::ConeClassifier(){
-    // imports network from files 
-    #ifdef DARKNET_MODEL 
-    m_Net = cv::dnn::readNetFromDarknet("cgfFile", "modelpath" ); 
-    #else 
-    #ifdef PYTORCH_MODEL 
-    m_Net = cv::dnn::readNetFromTorch("cfgFile", "modelPath"); 
-    #endif 
-    #endif
-    // do some configurations on network 
+ 
 
 }
 vn::ConeClassifier::ConeClassifier(const std::shared_ptr<StereoCamera>& Camera){
@@ -44,5 +36,8 @@ void vn::ConeClassifier::Detect(const std::shared_ptr<StereoCamera>& Camera){
 cv::Mat& EdgeDetect(const cv::Mat& ConeImage){ 
     cv::Mat edge_image; 
     edge_image.create(ConeImage.size(), CV_8UC1); 
-    
+
+    return edge_image; 
 }
+// Hough transform 
+// look for line within range 
